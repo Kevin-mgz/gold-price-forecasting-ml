@@ -178,7 +178,12 @@ def main():
             "series_id": "DFF",
             "filename": "fed_funds.csv",
             "description": "Effective Federal Funds Rate (Daily)",
-        }
+        },
+        {
+            "series_id": "DFII10",
+            "filename": "real_rates_10y.csv",
+            "description": "10-Year Real Interest Rate (TIPS)",
+        },
     ]
 
     print("\n\n🏛️  FRED (FEDERAL RESERVE) DOWNLOADS")
