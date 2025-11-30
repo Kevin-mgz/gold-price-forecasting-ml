@@ -9,3 +9,5 @@ yfinance
 textblob
 nltk
 joblib
+pandas-datareader
+pathlib
