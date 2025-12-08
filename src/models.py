@@ -266,9 +266,10 @@ def plot_feature_importance(model, feature_names, results_dir):
     # Create horizontal bar plot
     plt.figure(figsize=(12, 10))
 
-    # Plot all features (or top 20 if too many)
     n_features = min(20, len(feature_imp_df))
-    plot_data = feature_imp_df.tail(n_features)
+    # Plot all features (or top 20 if too many)
+    feature_imp_sorted = feature_imp_df.sort_values("Importance", ascending=True)
+    plot_data = feature_imp_sorted.tail(n_features)
 
     colors = plt.cm.viridis(np.linspace(0.3, 0.9, len(plot_data)))
 
@@ -277,7 +278,7 @@ def plot_feature_importance(model, feature_names, results_dir):
     plt.xlabel("Feature Importance", fontsize=12, fontweight="bold")
     plt.ylabel("Features", fontsize=12, fontweight="bold")
     plt.title(
-        "Random Forest Feature Importance\nTop 20 Features",
+        f"Random Forest Feature Importance\nTop {n_features} Features",
         fontsize=14,
         fontweight="bold",
         pad=20,
