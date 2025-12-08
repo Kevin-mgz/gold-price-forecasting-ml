@@ -1,0 +1,34 @@
+======================================================================
+GOLD PRICE PREDICTION - EVALUATION REPORT
+======================================================================
+
+CLASSIFICATION PERFORMANCE
+----------------------------------------------------------------------
+Accuracy:  0.5417
+Precision: 0.5868
+Recall:    0.7656
+F1-Score:  0.6644
+
+BACKTESTING RESULTS (Test Set)
+----------------------------------------------------------------------
+
+ML Strategy (Long-Only):
+  Total Return:      97.85%
+  Sharpe Ratio:      3.05
+  Max Drawdown:      -15.06%
+  Win Rate:          61.68%
+  Total Trades:      167
+
+Buy & Hold (Benchmark):
+  Total Return:      128.95%
+  Sharpe Ratio:      3.10
+  Max Drawdown:      -17.79%
+
+Relative Performance:
+  Outperformance:    -31.10%
+  Status:            UNDERPERFORMING
+
+======================================================================
+Note: Test set = Last 20% of data (temporal split)
+Strategy: Long-Only (only buy when predicting UP)
+======================================================================
