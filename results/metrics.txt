@@ -14,20 +14,20 @@ PERFORMANCE METRICS
 ----------------------------------------------------------------------
 
 ACCURACY:
-  Mean: 0.5430
-  Std:  0.0319
+  Mean: 0.5542
+  Std:  0.0294
 
 PRECISION:
-  Mean: 0.5772
-  Std:  0.0447
+  Mean: 0.5907
+  Std:  0.0498
 
 RECALL:
-  Mean: 0.7065
-  Std:  0.2356
+  Mean: 0.7242
+  Std:  0.2222
 
 F1:
-  Mean: 0.6117
-  Std:  0.1126
+  Mean: 0.6275
+  Std:  0.0935
 
 ======================================================================
 Note: Model trained on time series data with temporal validation.
