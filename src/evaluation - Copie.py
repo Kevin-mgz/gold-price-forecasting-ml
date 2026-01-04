@@ -10,7 +10,7 @@ import pandas as pd
 import numpy as np
 from pathlib import Path
 import joblib
-import json
+import json 
 import matplotlib.pyplot as plt
 import seaborn as sns
 from sklearn.metrics import (
@@ -169,6 +169,22 @@ def create_temporal_split(X, y, gold_returns, dates, test_size=0.2):
     return X_train, X_test, y_train, y_test, returns_test, dates_test
 
 
+def save_metrics_to_json(metrics, results_dir):
+    """
+    Save evaluation metrics to a JSON file.
+
+    Args:
+        metrics (dict): Metrics to save
+        results_dir (Path): Directory to save the JSON file
+    """
+    results_path = results_dir / "latest_metrics.json"
+    with open(results_path, "w") as f:
+        json.dump(metrics, f, indent=4)
+
+    print(f"✅ Metrics automatically saved to: {results_path}")
+    print("=" * 70)
+
+
 def evaluate_classification_metrics(model, X_test, y_test, results_dir):
     """
     Evaluate model performance with classification metrics.
@@ -214,10 +230,10 @@ def evaluate_classification_metrics(model, X_test, y_test, results_dir):
     print("-" * 70)
     print(classification_report(y_test, y_pred, target_names=["Down (0)", "Up (1)"]))
 
-    return (
-        y_pred,
-        metrics,
-    )
+    # Save metrics to JSON
+    save_metrics_to_json(metrics, results_dir)
+
+    return y_pred, metrics
 
 
 def plot_confusion_matrix(y_test, y_pred, results_dir):
@@ -571,47 +587,6 @@ def save_evaluation_report(metrics, backtest_results, results_dir):
     return report_path
 
 
-def save_metrics_to_json(metrics, backtest_results, results_dir):
-    """
-    Save evaluation metrics and backtesting results to a JSON file.
-
-    Args:
-        metrics (dict): Classification metrics
-        backtest_results (dict): Backtesting results
-        results_dir (Path): Directory to save the JSON file
-    """
-    # Combine selected metrics and backtesting results into a dictionary.
-    # Accuracy is formatted as a percentage with two decimal places.
-    # Backtesting results include Win Rate, Total Return, and Sharpe Ratio,
-    # each rounded to two decimal places for clarity.
-    results_to_save = {
-        "Accuracy": f"{round(metrics['accuracy'] * 100, 2)}%",
-        "Win Rate": f"{round(backtest_results['win_rate'], 2)}%",
-        "Total Return": f"{round(backtest_results['strategy_return'], 2)}%",
-        "Sharpe Ratio": round(backtest_results["strategy_sharpe"], 2),
-    }
-
-    results_path = results_dir / "latest_metrics.json"
-    with open(results_path, "w") as f:
-        json.dump(results_to_save, f, indent=4)
-
-    print(f"✅ Metrics automatically saved to: {results_path}")
-    print("=" * 70)
-
-    # Save comprehensive report
-    save_evaluation_report(metrics, backtest_results, results_dir)
-
-    # Final summary
-    print("\n" + "=" * 70)
-    print("✅ EVALUATION COMPLETED SUCCESSFULLY")
-    print("=" * 70)
-    print(f"\n📁 Output Files:")
-    print(f"  • Confusion Matrix:    results/confusion_matrix.png")
-    print(f"  • Equity Curve:        results/backtest_strategy.png")
-    print(f"  • Evaluation Report:   results/evaluation_report.txt")
-    print("\n" + "=" * 70 + "\n")
-
-
 def main():
     """
     Main evaluation pipeline.
@@ -641,9 +616,7 @@ def main():
 
     print("✓ Evaluation model trained (It has NOT seen the test data)")
     # Evaluate classification performance
-    y_pred, metrics = evaluate_classification_metrics(
-        model, X_test, y_test, results_dir
-    )
+    y_pred, metrics = evaluate_classification_metrics(model, X_test, y_test, results_dir)
 
     # Plot confusion matrix
     plot_confusion_matrix(y_test, y_pred, results_dir)
@@ -652,7 +625,19 @@ def main():
     backtest_results = backtest_strategy(
         y_test, y_pred, returns_test, dates_test, results_dir
     )
-    save_metrics_to_json(metrics, backtest_results, results_dir)
+
+    # Save comprehensive report
+    save_evaluation_report(metrics, backtest_results, results_dir)
+
+    # Final summary
+    print("\n" + "=" * 70)
+    print("✅ EVALUATION COMPLETED SUCCESSFULLY")
+    print("=" * 70)
+    print(f"\n📁 Output Files:")
+    print(f"  • Confusion Matrix:    results/confusion_matrix.png")
+    print(f"  • Equity Curve:        results/backtest_strategy.png")
+    print(f"  • Evaluation Report:   results/evaluation_report.txt")
+    print("\n" + "=" * 70 + "\n")
 
 
 if __name__ == "__main__":

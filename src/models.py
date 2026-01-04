@@ -1,7 +1,7 @@
 """
 Gold Price Forecasting - Modeling Script
 Trains and evaluates Random Forest classifier with time series cross-validation
-Author: Kevin Murengezi
+Author: AI Assistant
 Date: 2025
 """
 
@@ -62,11 +62,12 @@ def load_data():
     if not data_path.exists():
         raise FileNotFoundError(f"Dataset not found at {data_path}")
 
-    # Load dataset
-    # index_col=0 sets the first column (Date) as the Index.
-    # parse_dates=True ensures Python parses them as datetime objects.
+    # Load dataset with date as index
     df = pd.read_csv(data_path, index_col=0, parse_dates=True)
     print(f"✓ Dataset loaded: {df.shape[0]} rows × {df.shape[1]} columns")
+    print(
+        f"  Index: {df.index.name} (from {df.index[0].date()} to {df.index[-1].date()})"
+    )
 
     # Define reference columns to exclude from features
     reference_columns = ["Gold_Close", "DXY_Close", "Rates_10Y", "Real_Rates_10Y"]
@@ -76,18 +77,36 @@ def load_data():
     if target_column not in df.columns:
         raise ValueError(f"Target column '{target_column}' not found in dataset")
 
-    # Separate features and target
+    # Get all columns except target and reference columns
     exclude_columns = reference_columns + [target_column]
-    feature_columns = [col for col in df.columns if col not in exclude_columns]
+    potential_features = [col for col in df.columns if col not in exclude_columns]
 
-    X = df[feature_columns]
-    y = df[target_column]
+    # Filter only numeric columns
+    numeric_features = []
+    non_numeric_cols = []
 
-    print(f"✓ Features (X): {X.shape[1]} columns")
+    for col in potential_features:
+        if pd.api.types.is_numeric_dtype(df[col]):
+            numeric_features.append(col)
+        else:
+            non_numeric_cols.append(col)
+
+    # Alert if non-numeric columns found
+    if non_numeric_cols:
+        print(f"\n⚠️  Warning: Excluding {len(non_numeric_cols)} non-numeric column(s):")
+        for col in non_numeric_cols:
+            print(f"    - {col} (dtype: {df[col].dtype})")
+
+    # Create feature matrix and target vector
+    X = df[numeric_features].copy()
+    y = df[target_column].copy()
+
+    print(f"\n✓ Features (X): {X.shape[1]} columns")
+    print(f"  Feature list: {numeric_features}")
     print(f"✓ Target (y): {y.shape[0]} samples")
-    print(f"✓ Target distribution: {y.value_counts().to_dict()}")
+    print(f"  Target distribution: {y.value_counts().to_dict()}")
 
-    return X, y, feature_columns, data_path
+    return X, y, numeric_features, data_path
 
 
 def time_series_cross_validation(X, y, n_splits=5):
@@ -266,10 +285,9 @@ def plot_feature_importance(model, feature_names, results_dir):
     # Create horizontal bar plot
     plt.figure(figsize=(12, 10))
 
-    n_features = min(20, len(feature_imp_df))
     # Plot all features (or top 20 if too many)
-    feature_imp_sorted = feature_imp_df.sort_values("Importance", ascending=True)
-    plot_data = feature_imp_sorted.tail(n_features)
+    n_features = min(20, len(feature_imp_df))
+    plot_data = feature_imp_df.tail(n_features)
 
     colors = plt.cm.viridis(np.linspace(0.3, 0.9, len(plot_data)))
 
@@ -278,7 +296,7 @@ def plot_feature_importance(model, feature_names, results_dir):
     plt.xlabel("Feature Importance", fontsize=12, fontweight="bold")
     plt.ylabel("Features", fontsize=12, fontweight="bold")
     plt.title(
-        f"Random Forest Feature Importance\nTop {n_features} Features",
+        "Random Forest Feature Importance\nTop 20 Features",
         fontsize=14,
         fontweight="bold",
         pad=20,

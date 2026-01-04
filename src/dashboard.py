@@ -485,6 +485,120 @@ def display_prediction(prediction, confidence, probabilities):
     st.info(f"💡 **Interpretation:** {interpretation}")
 
 
+def display_model_explanation(model, df):
+    st.markdown("### 🔍 Explainable AI: What tends to drive the model?")
+    st.caption(
+        "These are the model’s most important indicators in general. "
+        "Today’s prediction may be driven by a different mix."
+    )
+
+    if not hasattr(model, "feature_importances_"):
+        st.warning("Feature importance not available for this model.")
+        st.markdown("---")
+        return
+
+    # Use training feature order if possible
+    if hasattr(model, "feature_names_in_"):
+        feature_cols = list(model.feature_names_in_)
+    else:
+        exclude_cols = [
+            "Target",
+            "Gold_Close",
+            "DXY_Close",
+            "Rates_10Y",
+            "Real_Rates_10Y",
+        ]
+        feature_cols = [
+            c
+            for c in df.columns
+            if c not in exclude_cols and pd.api.types.is_numeric_dtype(df[c])
+        ]
+
+    importances = model.feature_importances_
+
+    # Safety check
+    if len(feature_cols) != len(importances):
+        st.warning(
+            f"Feature mismatch: model has {len(importances)} importances but df provides {len(feature_cols)} features."
+        )
+        st.markdown("---")
+        return
+
+    # Build importance table
+    imp_df = (
+        pd.DataFrame({"Indicator": feature_cols, "Importance": importances})
+        .sort_values(by="Importance", ascending=False)
+        .reset_index(drop=True)
+    )
+
+    # 5 trading days move helper: compare -1 vs -6
+    def move_5d(indicator_name: str):
+        if len(df) < 6:
+            return "n/a"
+
+        current_val = df[indicator_name].iloc[-1]
+        prev_val = df[indicator_name].iloc[-6]
+
+        if pd.isna(current_val) or pd.isna(prev_val):
+            return "n/a"
+
+        # Identify "rate-like" features where pp makes more sense than % change
+        # (returns/changes/differences often hover around 0, % change becomes misleading)
+        name_lower = indicator_name.lower()
+        is_return_like = (
+            ("return" in name_lower)
+            or ("change" in name_lower)
+            or ("diff" in name_lower)
+            or ("volatility" in name_lower)
+        )
+
+        if is_return_like:
+            # Delta in percentage points (assuming decimals: 0.01 = 1%)
+            delta_pp = (current_val - prev_val) * 100
+            return f"{delta_pp:+.2f} pp (5d)"
+
+        # Otherwise: % change (guard against division by zero)
+        if prev_val == 0:
+            delta_abs = current_val - prev_val
+            return f"{delta_abs:+.4f} (5d)"
+
+        delta_pct = (current_val - prev_val) / abs(prev_val) * 100
+        return f"{delta_pct:+.2f}% (5d)"
+
+    # ----------------------------
+    # TOP 10 table
+    # ----------------------------
+    st.markdown("#### 📌 Top 10 indicators (5-day move)")
+    top10 = imp_df.head(10).copy()
+
+    top10["5-day move"] = top10["Indicator"].apply(move_5d)
+
+    top10.insert(0, "Rank", [f"#{i}" for i in range(1, len(top10) + 1)])
+    top10["Indicator"] = top10["Indicator"].str.replace("_", " ", regex=False)
+    top10["Importance"] = top10["Importance"].apply(lambda x: f"{x:.1%}")
+
+    display_df = top10[["Rank", "Indicator", "5-day move", "Importance"]].copy()
+
+    # Style move: green for +, red for -
+    def color_move(val):
+        if isinstance(val, str) and val.strip().startswith("+"):
+            return "color: #22c55e;"  # green
+        if isinstance(val, str) and val.strip().startswith("-"):
+            return "color: #ef4444;"  # red
+        return ""
+
+    st.dataframe(
+        display_df.style.applymap(color_move, subset=["5-day move"]),
+        use_container_width=True,
+        hide_index=True,
+    )
+
+    st.caption(
+        "Note: This is a global importance view. If you want “what drove today specifically”, use a local explainer (e.g., SHAP)."
+    )
+    st.markdown("---")
+
+
 def display_historical_chart(df):
     """
     Display interactive historical price chart.
@@ -551,29 +665,43 @@ def display_historical_chart(df):
 
 
 def display_disclaimer():
-    """Display legal disclaimer at bottom of page."""
-    st.markdown("---")
     st.markdown(
         """
+        <style>
+          .disclaimer-box{
+            background:#262730;
+            border:1px solid #4c4c54;
+            color:#e0e0e0;
+            padding:16px 18px;
+            border-radius:12px;
+            margin-top:12px;
+          }
+          .disclaimer-box h4{
+            margin:0 0 8px 0;
+            font-size:16px;
+            color:#e0e0e0;
+          }
+          .disclaimer-box p, .disclaimer-box li{
+            margin:6px 0;
+            color:#cfcfd6;
+            font-size:14px;
+          }
+          .disclaimer-box ul{
+            margin:8px 0 10px 18px;
+          }
+        </style>
+
         <div class="disclaimer-box">
-            <h4>⚠️ IMPORTANT DISCLAIMER</h4>
-            <p>
-                <strong>This application is for EDUCATIONAL PURPOSES ONLY.</strong>
-            </p>
-            <ul>
-                <li>❌ This is NOT financial advice or investment recommendation</li>
-                <li>❌ Past performance does not guarantee future results</li>
-                <li>❌ AI predictions can be wrong and should not be relied upon</li>
-                <li>✅ Always consult with a qualified financial advisor</li>
-                <li>✅ Never invest more than you can afford to lose</li>
-            </ul>
-            <p>
-                The creators of this application are not responsible for any financial 
-                losses incurred from using this tool. Trading and investing involve 
-                substantial risk of loss.
-            </p>
+          <h4>⚠️ IMPORTANT DISCLAIMER</h4>
+          <p><strong>Educational purposes only.</strong> Not financial advice.</p>
+          <ul>
+            <li>Past performance does not guarantee future results</li>
+            <li>AI predictions can be wrong</li>
+            <li>Trading/investing involve risk of loss</li>
+          </ul>
+          <p>Always do your own research and consult a qualified advisor.</p>
         </div>
-    """,
+        """,
         unsafe_allow_html=True,
     )
 
@@ -660,6 +788,9 @@ def main():
 
     # Display historical chart
     display_historical_chart(df)
+
+    # Explainable AI
+    display_model_explanation(model, df)
 
     # Display disclaimer
     display_disclaimer()
