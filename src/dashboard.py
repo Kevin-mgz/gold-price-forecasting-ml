@@ -295,7 +295,7 @@ def display_sidebar():
     # 4. Sharpe Ratio
     st.sidebar.metric("Sharpe Ratio", fmt2(metrics["Sharpe Ratio"]))
     st.sidebar.caption(
-        "⚖️ **Risk-Adjusted Return:** Measure of performance relative to risk taken. > 2.0 is excellent."
+        "⚖️ **Risk-Adjusted Return:** Measure of performance relative to risk taken. > 1.0 is considered good."
     )
 
     st.sidebar.markdown("---")
