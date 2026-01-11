@@ -106,8 +106,10 @@ The project integrates data from two primary sources:
 - Effective Federal Funds Rate (DFF): Monetary policy indicator
 - 10-Year Real Interest Rate (DFII10): TIPS-based real rates
 
-**Bundled Data**:
-- Central bank gold demand: Quarterly data on official sector purchases
+**Bundled Data (Central Bank Demand):**
+* **Source:** World Gold Council (WGC), specifically from the "Quarterly Gold Demand Trends" report.
+* **Dataset:** Derived from the **"Gold Balance"** aggregate table (Net Central Bank Purchases row).
+* **Acquisition & Processing:** The data was manually extracted from the WGC official Excel tables and transposed from a wide format (quarters as columns) to a time-series format (quarters as rows). The `clean_csv.py` script was then employed to parse the specific quarterly string format (e.g., "Q1'10") into standard datetime objects compatible with the weekly market data.
 
 All data spans from January 2005 to January 2025, providing 20 years of historical context including multiple economic regimes (2008 financial crisis, 2020 pandemic, 2022 inflation surge).
 
@@ -601,6 +603,9 @@ The system provides a disciplined, data-driven framework for gold allocation wit
 4. **Single Asset Focus**: The model ignores portfolio context; gold positions should be sized relative to other allocations.
 
 5. **Black Swan Events**: Cannot predict unprecedented shocks that dominate gold's largest moves.
+
+**9. Manual Data Dependency:**
+Unlike the automated Yahoo and FRED pipelines, Central Bank demand data requires manual extraction from quarterly WGC reports. This "human-in-the-loop" constraint implies that fundamental inputs may lag behind real-time releases if the dataset is not manually updated immediately.
 
 ### 7.4 Future Work
 
