@@ -8,48 +8,42 @@ A machine learning system for predicting weekly gold price movements using Rando
 gold-price-forecasting-ml/
 ├── data/
 │   ├── raw/                    # Downloaded CSV files
-│   └── processed/              # Engineered features
-├── models/                     # Trained model (.joblib)
-├── results/                    # Plots, metrics, reports
+│   │   └── central_bank_demand.csv  # Bundled dataset
+│   └── processed/              # Generated: dataset_final.csv
+├── results/                    # Generated: plots, metrics, reports
 ├── src/
+│   ├── __init__.py
 │   ├── data_loader.py          # Step 1: Download data
+│   ├── clean_csv.py            # Clean central bank CSV
 │   ├── feature_engineering.py  # Step 2: Create features
-│   ├── models.py               # Step 3: Train model
-│   ├── evaluation.py           # Step 4: Backtest
-│   ├── predict.py              # CLI prediction
-│   └── dashboard.py            # Streamlit web app
+│   ├── models.py               # Step 3: Train classifier
+│   ├── evaluation.py           # Backtest & metrics
+│   ├── regression_bonus.py     # Step 4: Train regressor
+│   ├── predict.py              # Step 5: Generate prediction
+│   ├── dashboard.py            # Streamlit web app
+│   └── debug_data.py           # Data leakage diagnostic
+├── main.py                     # Main entry point
+├── project_report.md           # Academic report
+├── project_report.pdf          # PDF version
+├── README.md
 ├── requirements.txt
-└── README.md
+└── .gitignore
 ```
 
 ## ⚙️ Setup
 
 ```bash
-# Install dependencies
+# Install dependencies (use pip3 on macOS, pip on Windows)
 pip install -r requirements.txt
 ```
 
 ## 🚀 Usage
 
-### Run Full Pipeline
-
 ```bash
-python src/data_loader.py         # Download data
-python src/feature_engineering.py # Create features
-python src/models.py              # Train model
-python src/evaluation.py          # Evaluate & backtest
-```
+# Run full pipeline (data → features → training → regression → prediction)
+python main.py
 
-### Generate Prediction
-
-```bash
-python src/predict.py             # CLI prediction for next week
-```
-
-### Launch Dashboard
-
-```bash
-streamlit run src/dashboard.py    # Web interface at localhost:8501
+# At the end, you will be prompted to launch the dashboard
 ```
 
 ## 📊 Results
@@ -64,4 +58,4 @@ streamlit run src/dashboard.py    # Web interface at localhost:8501
 
 ## 👤 Author
 
-Kevin Murengezi — University of Geneva — January 2026
+Kevin Murengezi — University of Lausanne — January 2026
