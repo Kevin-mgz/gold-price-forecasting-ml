@@ -3,7 +3,7 @@
 **Author:** Kevin Murengezi  
 **Date:** January 2026  
 **Course:** Machine Learning Project  
-**Institution:** University of Geneva
+**Institution:** University of Lausanne
 
 ---
 
@@ -380,6 +380,9 @@ pip install -r requirements.txt
 
 # Run full pipeline (includes prediction)
 python main.py
+
+# Run regression for further analysis and model comparaison 
+python regression_bonus.py
 
 ```
 
