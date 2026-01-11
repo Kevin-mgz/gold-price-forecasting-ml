@@ -350,40 +350,43 @@ The complete codebase is structured for reproducibility and modularity:
 ```
 gold-price-forecasting-ml/
 ├── data/
-│   ├── raw/              # Downloaded CSV files
-│   └── processed/        # Engineered features (dataset_final.csv)
-├── models/               # Trained model (random_forest_model.joblib)
-├── results/              # Plots, reports, metrics JSON
-├── src/                  # Source code (7 Python scripts)
-├── requirements.txt      # Python dependencies
-└── README.md             # Setup instructions
+│   ├── raw/                    # Downloaded CSV files
+│   │   └── central_bank_demand.csv  # Bundled dataset
+│   └── processed/              # Generated: dataset_final.csv
+├── results/                    # Generated: plots, metrics, reports
+├── src/                        
+│   ├── __init__.py
+│   ├── data_loader.py          # Step 1: Download data
+│   ├── clean_csv.py            # Clean central bank CSV
+│   ├── feature_engineering.py  # Step 2: Create features
+│   ├── models.py               # Step 3: Train model
+│   ├── evaluation.py           # Step 4: Backtest & metrics
+│   ├── regression_bonus.py     # Bonus: Regression model
+│   ├── predict.py              # CLI prediction
+│   ├── dashboard.py            # Streamlit web app
+│   └── debug_data.py           # Data leakage diagnostic
+├── main.py                     # Main entry point
+├── project_report.md           # This report
+├── project_report.pdf          # PDF version
+├── README.md                   # Setup instructions
+├── requirements.txt            # Python dependencies
+└── .gitignore
 ```
 
 **Installation & Execution**:
 ```bash
-# Install dependencies
+# Install dependencies (use pip3 on macOS, pip on Windows)
 pip install -r requirements.txt
 
-# Run pipeline
-python src/data_loader.py         # Step 1: Download data
-python src/feature_engineering.py # Step 2: Create features
-python src/models.py               # Step 3: Train model
-python src/evaluation.py           # Step 4: Backtest & metrics
+# Run full pipeline (includes prediction)
+python main.py
 
-# Generate prediction
-python src/predict.py              # CLI prediction for next week
-
-# Launch dashboard
-streamlit run src/dashboard.py    # Web interface at localhost:8501
 ```
-
-**Data Availability**: All data is publicly accessible via Yahoo Finance and FRED APIs. No proprietary datasets are required.
 
 **Reproducibility Notes**: 
 - Fixed random seed (`random_state=42`) ensures consistent model training
 - Temporal splits eliminate randomness in train-test allocation
-- All preprocessing steps are documented in code comments
-- Dependencies specified in `requirements.txt` for exact environment replication
+- All data publicly accessible via Yahoo Finance and FRED APIs
 
 ---
 
@@ -671,6 +674,6 @@ This project leveraged AI assistance tools at various stages:
 
 ---
 
-**Report Complete: 10,247 words | 12 pages**
+**Report Complete: 4,937 words | 10 pages**
 
 ---
