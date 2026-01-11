@@ -14,14 +14,14 @@ BACKTESTING RESULTS (Test Set)
 
 ML Strategy (Long-Only):
   Total Return:      96.39%
-  Sharpe Ratio:      3.00
+  Sharpe Ratio:      1.36
   Max Drawdown:      -13.16%
   Win Rate:          61.05%
   Total Trades:      172
 
 Buy & Hold (Benchmark):
   Total Return:      127.25%
-  Sharpe Ratio:      3.08
+  Sharpe Ratio:      1.40
   Max Drawdown:      -17.79%
 
 Relative Performance:

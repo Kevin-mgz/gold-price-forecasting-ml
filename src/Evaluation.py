@@ -330,14 +330,24 @@ def backtest_strategy(y_test, y_pred, returns_test, dates_test, results_dir):
     strategy_total_return = (strategy_equity[-1] / initial_capital - 1) * 100
     buyhold_total_return = (buyhold_equity[-1] / initial_capital - 1) * 100
 
+    # --- Temporary conversion to weekly data for Sharpe calculation ---
+    # Convert numpy arrays back to pandas Series to use resample with dates
+    s_ret_series = pd.Series(strategy_returns, index=dates_clean)
+    b_ret_series = pd.Series(buyhold_returns, index=dates_clean)
+
+    # Resample daily returns to weekly ('W') and sum them up
+    strategy_returns_weekly = s_ret_series.resample("W").sum()
+    buyhold_returns_weekly = b_ret_series.resample("W").sum()
+
+    # --- Annualized Sharpe Ratio calculation (Weekly basis: sqrt(52)) ---
     strategy_sharpe = (
-        np.mean(strategy_returns) / np.std(strategy_returns) * np.sqrt(252)
-        if np.std(strategy_returns) > 0
+        np.mean(strategy_returns_weekly) / np.std(strategy_returns_weekly) * np.sqrt(52)
+        if np.std(strategy_returns_weekly) > 0
         else 0
     )
     buyhold_sharpe = (
-        np.mean(buyhold_returns) / np.std(buyhold_returns) * np.sqrt(252)
-        if np.std(buyhold_returns) > 0
+        np.mean(buyhold_returns_weekly) / np.std(buyhold_returns_weekly) * np.sqrt(52)
+        if np.std(buyhold_returns_weekly) > 0
         else 0
     )
 
