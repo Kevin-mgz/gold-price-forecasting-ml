@@ -1,65 +1,67 @@
-# Gold Price Forecasting & Macroeconomic Indicator Modeling
-### Data Science and Advanced Programming — Project
-### Kevin Murengezi — HEC Lausanne (MSch)
+# Gold Price Forecasting with Machine Learning
 
----
+A machine learning system for predicting weekly gold price movements using Random Forest classification.
 
-## 📌 Project Overview
-The aim of this project is to build a machine learning–based system to analyze how macroeconomic variables influence gold prices and to generate short-term forecasts.
+## 📁 Project Structure
 
-This project combines:
-- Real financial data (gold prices, interest rates, USD index, central bank demand)
-- Feature engineering based on economic theory
-- Predictive modeling (Linear Regression + ARIMA)
-- Model evaluation
-- Interpretation of results
-
----
-
-## 🎯 Objectives
-
-### **Main Goals**
-1. Clean and preprocess gold-related and macroeconomic time-series data  
-2. Engineer features representing fundamental drivers of gold  
-   - Fed nominal interest rates  
-   - USD index  
-   - Central bank gold demand  
-   - ETF gold flows  
-3. Build a **Linear Regression model**  
-4. Build an **ARIMA model**  
-5. Compare both models  
-6. Provide an economic interpretation of model predictions  
-
-### **Stretch Goals (optional)**
-- Hyperparameter tuning  
-- Grid search on ARIMA  
-- Lasso/Ridge regression  
-
----
-
-## 📁 Repository Structure
-
-```plaintext
-project/
-│
+```
+gold-price-forecasting-ml/
 ├── data/
-│   ├── gold_prices.csv
-│   ├── fed_rates.csv
-│   ├── usd_index.csv
-│   └── central_bank_demand.csv
-│
-├── notebooks/
-│   ├── 01_data_preparation.ipynb
-│   ├── 02_feature_engineering.ipynb
-│   ├── 03_linear_regression_model.ipynb
-│   ├── 04_arima_model.ipynb
-│   └── 05_model_comparison.ipynb
-│
+│   ├── raw/                    # Downloaded CSV files
+│   └── processed/              # Engineered features
+├── models/                     # Trained model (.joblib)
+├── results/                    # Plots, metrics, reports
 ├── src/
-│   ├── preprocessing.py
-│   ├── features.py
-│   ├── models.py
-│   └── utils.py
-│
-├── README.md
-└── requirements.txt
+│   ├── data_loader.py          # Step 1: Download data
+│   ├── feature_engineering.py  # Step 2: Create features
+│   ├── models.py               # Step 3: Train model
+│   ├── evaluation.py           # Step 4: Backtest
+│   ├── predict.py              # CLI prediction
+│   └── dashboard.py            # Streamlit web app
+├── requirements.txt
+└── README.md
+```
+
+## ⚙️ Setup
+
+```bash
+# Install dependencies
+pip install -r requirements.txt
+```
+
+## 🚀 Usage
+
+### Run Full Pipeline
+
+```bash
+python src/data_loader.py         # Download data
+python src/feature_engineering.py # Create features
+python src/models.py              # Train model
+python src/evaluation.py          # Evaluate & backtest
+```
+
+### Generate Prediction
+
+```bash
+python src/predict.py             # CLI prediction for next week
+```
+
+### Launch Dashboard
+
+```bash
+streamlit run src/dashboard.py    # Web interface at localhost:8501
+```
+
+## 📊 Results
+
+| Metric | ML Strategy | Buy & Hold |
+|--------|-------------|------------|
+| Accuracy | 54.2% | - |
+| Total Return | +96.39% | +127.25% |
+| Sharpe Ratio | 1.36 | 1.40 |
+| Max Drawdown | -13.16% | -17.79% |
+| Win Rate | 61.05% | - |
+
+## 👤 Author
+
+Kevin Murengezi — University of Geneva — January 2026
