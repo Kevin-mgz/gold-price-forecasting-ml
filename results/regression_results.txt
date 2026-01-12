@@ -1,0 +1,23 @@
+================================================================================
+GOLD PRICE REGRESSION - VOLATILITY PREDICTION RESULTS
+================================================================================
+
+MODEL: Random Forest Regressor
+TARGET: Next week's return (% change)
+SPLIT: 80% Train / 20% Test (Temporal)
+
+PERFORMANCE METRICS:
+--------------------------------------------------------------------------------
+RMSE (Root Mean Squared Error):  2.1360%
+R² Score:                         -0.0466
+
+INTERPRETATION:
+--------------------------------------------------------------------------------
+The model struggles to predict exact returns accurately.
+This is expected as financial returns are highly stochastic.
+
+================================================================================
+NOTE: Predicting exact returns is significantly harder than
+      predicting direction (classification). Even low R² values
+      can be valuable in financial applications.
+================================================================================

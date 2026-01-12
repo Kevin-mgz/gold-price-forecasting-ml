@@ -1,0 +1,34 @@
+======================================================================
+GOLD PRICE PREDICTION - MODEL PERFORMANCE REPORT
+======================================================================
+
+MODEL: Random Forest Classifier
+  - n_estimators: 100
+  - max_depth: 10
+  - random_state: 42
+
+CROSS-VALIDATION: Time Series Split (5 folds)
+
+----------------------------------------------------------------------
+PERFORMANCE METRICS
+----------------------------------------------------------------------
+
+ACCURACY:
+  Mean: 0.5411
+  Std:  0.0276
+
+PRECISION:
+  Mean: 0.5769
+  Std:  0.0528
+
+RECALL:
+  Mean: 0.7109
+  Std:  0.2249
+
+F1:
+  Mean: 0.6160
+  Std:  0.1032
+
+======================================================================
+Note: Model trained on time series data with temporal validation.
+======================================================================
